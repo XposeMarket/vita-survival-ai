@@ -49,6 +49,7 @@ add_executable(${PROJECT_NAME}
 
 target_compile_definitions(SurvivalAI PRIVATE 
   SQLITE_OMIT_LOAD_EXTENSION=1
+  HAVE_USLEEP=0
   SQLITE_THREADSAFE=0
 )
 
