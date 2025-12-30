@@ -9,38 +9,64 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    
+    runs-on: ubuntu-22.04
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Install VitaSDK
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y wget
-        cd /tmp
-        wget https://github.com/vitasdk/autobuilds/releases/download/master-linux-v2.535/vitasdk-x86_64-linux-gnu-latest.tar.bz2
-        tar xjf vitasdk-x86_64-linux-gnu-latest.tar.bz2
-        sudo mkdir -p /usr/local
-        sudo mv vitasdk /usr/local/
-        echo "VITASDK=/usr/local/vitasdk" >> $GITHUB_ENV
-        echo "/usr/local/vitasdk/bin" >> $GITHUB_PATH
-    
-    - name: Install dependencies
-      run: |
-        sudo apt-get install -y cmake build-essential
-    
-    - name: Build VPK
-      run: |
-        mkdir build
-        cd build
-        cmake ..
-        make
-    
-    - name: Upload VPK
-      uses: actions/upload-artifact@v4
-      with:
-        name: SurvivalAI-VPK
-        path: build/*.vpk
-        if-no-files-found: error
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget curl jq cmake build-essential bzip2 tar git
+
+      - name: Install VitaSDK (autobuilds)
+        env:
+          VITASDK_TAG: master-linux-v2.535
+        run: |
+          set -euxo pipefail
+          cd /tmp
+
+          # Query the release assets and pick the x86_64 linux tar.bz2
+          ASSET_URL=$(curl -s "https://api.github.com/repos/vitasdk/autobuilds/releases/tags/${VITASDK_TAG}" \
+            | jq -r '.assets[] | select(.name | test("^vitasdk-x86_64-linux-gnu-.*\\.tar\\.bz2$")) | .browser_download_url' \
+            | head -n 1)
+
+          if [ -z "$ASSET_URL" ] || [ "$ASSET_URL" = "null" ]; then
+            echo "Could not find VitaSDK asset URL for tag ${VITASDK_TAG}"
+            exit 1
+          fi
+
+          echo "Downloading: $ASSET_URL"
+          wget -O vitasdk.tar.bz2 "$ASSET_URL"
+          tar -xjf vitasdk.tar.bz2
+
+          sudo mkdir -p /usr/local
+          sudo rm -rf /usr/local/vitasdk
+          sudo mv vitasdk /usr/local/vitasdk
+
+          echo "VITASDK=/usr/local/vitasdk" >> $GITHUB_ENV
+          echo "/usr/local/vitasdk/bin" >> $GITHUB_PATH
+
+      - name: Build (CMake if present, otherwise Makefile)
+        run: |
+          set -euxo pipefail
+          if [ -f "CMakeLists.txt" ]; then
+            mkdir -p build
+            cmake -S . -B build
+            cmake --build build -j
+          else
+            make -j
+          fi
+
+      - name: Find VPK
+        run: |
+          set -euxo pipefail
+          find . -name "*.vpk" -maxdepth 4 -print
+
+      - name: Upload VPK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Vita-VPK
+          path: "**/*.vpk"
+          if-no-files-found: error
