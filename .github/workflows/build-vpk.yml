@@ -16,24 +16,15 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Install VitaSDK
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y wget tar
-        cd /tmp
-        wget https://github.com/vitasdk/autobuilds/releases/download/master-linux-v2024/vitasdk-x86_64-linux-gnu-2024-06-09_13-39-09.tar.bz2
-        tar xf vitasdk-x86_64-linux-gnu-2024-06-09_13-39-09.tar.bz2
-        sudo mv vitasdk /opt/vitasdk
-        echo "VITASDK=/opt/vitasdk/vitasdk" >> $GITHUB_ENV
-        echo "/opt/vitasdk/vitasdk/bin" >> $GITHUB_PATH
+      uses: vitasdk/vitasdk-action@v1
     
     - name: Install dependencies
       run: |
+        sudo apt-get update
         sudo apt-get install -y cmake build-essential
     
     - name: Build VPK
       run: |
-        export VITASDK=/opt/vitasdk/vitasdk
-        export PATH=$PATH:$VITASDK/bin
         mkdir build
         cd build
         cmake ..
