@@ -1,0 +1,14 @@
+# Ignore build artifacts and IDE files
+build/
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+.vscode/
+/.vs/
+*.user
+*.suo
+*.sln
+*.vcxproj*

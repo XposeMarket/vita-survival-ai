@@ -47,6 +47,11 @@ add_executable(${PROJECT_NAME}
   ${SQLITE_SOURCES}
 )
 
+target_compile_definitions(SurvivalAI PRIVATE 
+    SQLITE_OS_OTHER=1
+    SQLITE_OMIT_LOAD_EXTENSION=1
+)
+
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
   vita2d

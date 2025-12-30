@@ -1,7 +1,8 @@
 #ifndef SURVIVAL_AI_H
 #define SURVIVAL_AI_H
-
 #include <psp2/ctrl.h>
+#include <psp2/kernel/threadmgr.h>
+#include <algorithm>
 #include <psp2/display.h>
 #include <psp2/kernel/processmgr.h>
 #include <psp2/io/fcntl.h>

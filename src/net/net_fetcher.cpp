@@ -1,5 +1,6 @@
 #include "net_fetcher.h"
 #include <psp2/sysmodule.h>
+#include <psp2/kernel/threadmgr.h>
 #include <cstring>
 #include <algorithm>
 

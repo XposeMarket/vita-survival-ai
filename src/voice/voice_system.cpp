@@ -2,6 +2,8 @@
 #include <psp2/kernel/threadmgr.h>
 #include <algorithm>
 
+#include "search_engine.h"
+
 // NOTE: This is a stub implementation
 // Full voice requires integration with:
 // - Audio decoding (libvorbis for .ogg)

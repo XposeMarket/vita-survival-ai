@@ -3,6 +3,8 @@
 #include <sstream>
 #include <iomanip>
 
+#include <psp2/kernel/threadmgr.h>
+
 OnlineSearch::OnlineSearch() : netFetcher(nullptr), rssParser(nullptr),
                                extractor(nullptr), database(nullptr) {
     // Default settings

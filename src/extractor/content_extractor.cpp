@@ -206,7 +206,9 @@ std::vector<Quote> ContentExtractor::ExtractQuotes(const std::string& html, int 
     quotes.insert(quotes.end(), regularQuotes.begin(), regularQuotes.end());
     
     // Find text in curly quotes
-    auto curlyQuotes = FindQuotedText(text, """, """);
+    std::string openQuote = "\u201C";
+    std::string closeQuote = "\u201D";
+    auto curlyQuotes = FindQuotedText(text, openQuote, closeQuote);
     quotes.insert(quotes.end(), curlyQuotes.begin(), curlyQuotes.end());
     
     // Filter by length

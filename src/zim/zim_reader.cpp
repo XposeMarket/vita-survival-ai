@@ -1,5 +1,6 @@
 #include "zim_reader.h"
 #include <ctime>
+#include <algorithm>
 
 // NOTE: This is a stub implementation
 // Full ZIM reading requires libzim library integration

@@ -4,6 +4,9 @@
 #include <cctype>
 #include <sstream>
 
+#include "survival_ai.h"
+#include "online_search.h"
+
 SearchEngine::SearchEngine() : database(nullptr), zimReader(nullptr), 
                                onlineSearch(nullptr), llmEngine(nullptr) {
 }
