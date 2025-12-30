@@ -12,8 +12,12 @@
 #include <psp2/kernel/threadmgr.h>
 #include <psp2/io/dirent.h>
 #include <psp2/io/fcntl.h>
+#include <psp2/io/stat.h>
 #include <psp2/sysmodule.h>
 #include <cstring>
+
+// Ensure the sceIoMkdir prototype is available for compilation
+extern "C" int sceIoMkdir(const char *dir, int mode);
 
 // Global app context
 AppContext g_app;
