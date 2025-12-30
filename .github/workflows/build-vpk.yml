@@ -47,7 +47,13 @@ jobs:
         run: |
           export VITASDK=/usr/local/vitasdk
           export PATH=$PATH:$VITASDK/bin
-          # Install vita2d library
+          # Install libpng first (vita2d dependency)
+          cd /tmp
+          git clone https://github.com/vitasdk/packages
+          cd packages
+          # Install dependencies with vdpm
+          $VITASDK/bin/vdpm libpng libjpeg-turbo freetype zlib
+          # Now install vita2d
           cd /tmp
           git clone https://github.com/xerpi/vita2dlib
           cd vita2dlib/libvita2d
