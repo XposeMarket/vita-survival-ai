@@ -1,0 +1,47 @@
+name: Build PS Vita VPK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Install VitaSDK
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget tar
+        cd /tmp
+        wget https://github.com/vitasdk/autobuilds/releases/download/master-linux-v2025/vitasdk-x86_64-linux-gnu-2025-07-20_13-03-36.tar.bz2
+        tar xf vitasdk-x86_64-linux-gnu-2025-07-20_13-03-36.tar.bz2
+        sudo mv vitasdk /opt/vitasdk
+        echo "VITASDK=/opt/vitasdk/vitasdk" >> $GITHUB_ENV
+        echo "/opt/vitasdk/vitasdk/bin" >> $GITHUB_PATH
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y cmake build-essential
+    
+    - name: Build VPK
+      run: |
+        export VITASDK=/opt/vitasdk/vitasdk
+        export PATH=$PATH:$VITASDK/bin
+        mkdir build
+        cd build
+        cmake ..
+        make
+    
+    - name: Upload VPK
+      uses: actions/upload-artifact@v3
+      with:
+        name: SurvivalAI-VPK
+        path: build/*.vpk
+        if-no-files-found: error
