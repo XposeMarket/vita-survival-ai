@@ -32,7 +32,8 @@ struct KeyboardInput {
     bool submitted;
     SceImeDialogResult result;
     uint16_t inputTextBuffer[SCE_IME_DIALOG_MAX_TEXT_LENGTH + 1];
-    uint8_t param[SCE_IME_DIALOG_MAX_OPTION_SIZE];
+    // Removed problematic IME param buffer; not required by our usage.
+    // uint8_t param[128];
 };
 
 class UI {

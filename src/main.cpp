@@ -11,6 +11,7 @@
 #include "llm_engine.h"
 #include <psp2/kernel/threadmgr.h>
 #include <psp2/io/dirent.h>
+#include <psp2/io/fcntl.h>
 #include <psp2/sysmodule.h>
 #include <cstring>
 

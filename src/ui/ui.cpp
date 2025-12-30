@@ -3,6 +3,10 @@
 #include <sstream>
 #include <ctime>
 #include <iomanip>
+#include <cstring>
+#include <psp2/io/fcntl.h>
+#include "voice_system.h"
+#include "llm_engine.h"
 
 UI::UI() : currentScreen(SCREEN_MAIN_MENU), previousScreen(SCREEN_MAIN_MENU),
            selectedIndex(0), scrollOffset(0), currentAnswer(nullptr),
@@ -11,7 +15,6 @@ UI::UI() : currentScreen(SCREEN_MAIN_MENU), previousScreen(SCREEN_MAIN_MENU),
     keyboard.active = false;
     keyboard.submitted = false;
     memset(keyboard.inputTextBuffer, 0, sizeof(keyboard.inputTextBuffer));
-    memset(keyboard.param, 0, sizeof(keyboard.param));
 }
 
 UI::~UI() {
@@ -183,7 +186,7 @@ void UI::HandleInput(const SceCtrlData& pad, const SceCtrlData& oldPad) {
             if (IsButtonPressed(SCE_CTRL_TRIANGLE)) {
                 // Speak answer
                 if (g_app.voice && currentAnswer) {
-                    g_app.voice->SpeakAnswer(*currentAnswer, VOICE_SUMMARY);
+                    g_app.voice->SpeakAnswer(*currentAnswer, (VoiceMode)0);
                 }
             }
             if (IsButtonPressed(SCE_CTRL_CIRCLE)) {
@@ -224,7 +227,7 @@ void UI::ShowKeyboard(const std::string& title, const std::string& initialText) 
     sceImeDialogParamInit(&param);
     
     // Set input mode (default text)
-    param.supportedLanguages = SCE_IME_LANGUAGE_ENGLISH_US;
+    param.supportedLanguages = 0x00000001; // English US language code
     param.languagesForced = SCE_FALSE;
     param.type = SCE_IME_TYPE_DEFAULT;
     param.option = SCE_IME_OPTION_MULTILINE;
