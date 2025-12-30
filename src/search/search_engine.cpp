@@ -415,6 +415,52 @@ Answer SearchEngine::BuildSummaryAnswer(const QueryAnalysis& analysis,
     return answer;
 }
 
+Answer SearchEngine::GenerateAnswer(const std::string& query,
+                                   const std::vector<SearchResult>& vaultResults,
+                                   const std::vector<ZIMSearchResult>& zimResults) {
+    Answer answer;
+    answer.type = ANSWER_SUMMARY;
+    answer.confidence = 0.0f;
+
+    if (!vaultResults.empty()) {
+        // Use the combined snippets from vault results
+        std::string combined;
+        for (size_t i = 0; i < std::min(vaultResults.size(), size_t(3)); i++) {
+            combined += vaultResults[i].item.text_snippet + "\n\n";
+            SourceInfo source;
+            source.title = vaultResults[i].item.title;
+            source.url = vaultResults[i].item.url;
+            source.domain = vaultResults[i].item.source_domain;
+            source.author = vaultResults[i].item.author;
+            source.published = vaultResults[i].item.published_at;
+            source.retrieved = vaultResults[i].item.retrieved_at;
+            source.content_type = vaultResults[i].item.content_type;
+            source.confidence = vaultResults[i].score;
+            answer.sources.push_back(source);
+        }
+        answer.summary = combined;
+        answer.confidence = 0.8f;
+        return answer;
+    }
+
+    if (!zimResults.empty()) {
+        // Use first ZIM result as a fallback
+        answer.summary = zimResults[0].snippet.empty() ? zimResults[0].title : zimResults[0].snippet;
+        SourceInfo source;
+        source.title = zimResults[0].title;
+        source.url = "wikipedia://" + zimResults[0].url;
+        source.domain = "Wikipedia";
+        source.confidence = 0.7f;
+        answer.sources.push_back(source);
+        answer.confidence = 0.7f;
+        return answer;
+    }
+
+    answer.summary = "No relevant results found.";
+    answer.confidence = 0.0f;
+    return answer;
+}
+
 Answer SearchEngine::GenerateAnswerWithLLM(const std::string& query,
                                           const QueryAnalysis& analysis,
                                           const std::vector<SearchResult>& results) {

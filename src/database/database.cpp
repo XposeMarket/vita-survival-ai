@@ -261,6 +261,41 @@ int Database::GetTotalItems() {
     return count;
 }
 
+bool Database::GetItemById(const std::string& id, VaultItem& item) {
+    if (!db) return false;
+
+    sqlite3_stmt* stmt;
+    const char* sql = "SELECT id, title, url, source_domain, author, published_at, retrieved_at, topic_tags, text_snippet, text_clean, quotes_json, language, content_type, license_note FROM items WHERE id = ?";
+
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        return false;
+    }
+
+    sqlite3_bind_text(stmt, 1, id.c_str(), -1, SQLITE_TRANSIENT);
+
+    bool found = false;
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        item.id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+        item.title = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        item.url = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        item.source_domain = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        item.author = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+        item.published_at = sqlite3_column_int64(stmt, 5);
+        item.retrieved_at = sqlite3_column_int64(stmt, 6);
+        item.topic_tags = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
+        item.text_snippet = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 8));
+        item.text_clean = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 9));
+        item.quotes_json = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 10));
+        item.language = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 11));
+        item.content_type = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 12));
+        item.license_note = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 13));
+        found = true;
+    }
+
+    sqlite3_finalize(stmt);
+    return found;
+}
+
 bool Database::PrepareStatements() {
     const char* insertSql = R"(
         INSERT OR REPLACE INTO items 
