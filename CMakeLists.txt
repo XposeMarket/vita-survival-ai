@@ -37,14 +37,8 @@ file(GLOB SOURCES
   "src/llm/*.cpp"
 )
 
-# SQLite3 library (we'll build it in)
-set(SQLITE_SOURCES
-  libs/sqlite3/sqlite3.c
-)
-
 add_executable(${PROJECT_NAME}
   ${SOURCES}
-  ${SQLITE_SOURCES}
 )
 
 target_compile_definitions(SurvivalAI PRIVATE 
@@ -71,6 +65,7 @@ target_link_libraries(${PROJECT_NAME}
   SceAppMgr_stub
   SceAppUtil_stub
   SceIofilemgr_stub
+  SceSqlite_stub
   freetype
   png
   jpeg
