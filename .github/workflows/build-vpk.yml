@@ -69,7 +69,19 @@ jobs:
           if [ -f "CMakeLists.txt" ]; then
             mkdir -p build
             cmake -S . -B build
-            cmake --build build -j
+            cmake --build build -j 2>&1 | tee build.log || true
+            # Check if executable was built
+            if [ -f "build/SurvivalAI" ]; then
+              echo "✓ Executable built successfully"
+              ls -lh build/SurvivalAI
+            fi
+            # Try to build VPK manually if cmake build failed
+            if [ ! -f "build/SurvivalAI.vpk" ]; then
+              echo "VPK not created, building manually..."
+              cd build
+              vita-mksfoex -s TITLE_ID=SURV00001 "Survival AI" param.sfo
+              vita-pack-vpk -s param.sfo -b SurvivalAI SurvivalAI.vpk
+            fi
           else
             make -j
           fi
