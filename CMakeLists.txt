@@ -40,6 +40,7 @@ file(GLOB SOURCES
 # SQLite3 library (we'll build it in)
 set(SQLITE_SOURCES
   libs/sqlite3/sqlite3.c
+  libs/sqlite3/sqlite3_vita_os.c
 )
 
 add_executable(${PROJECT_NAME}
