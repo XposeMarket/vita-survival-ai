@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <ctime>
-#include "sqlite3.h"
+#include <sqlite3.h>
 
 struct VaultItem {
     std::string id;
